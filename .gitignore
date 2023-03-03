@@ -30,4 +30,4 @@ override.tf.json
 
 *.hcl*
 
-./secrets.tfvars
+secrets.tfvars
