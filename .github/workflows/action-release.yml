@@ -5,8 +5,8 @@ on:
     branches:
       - main
 env:
-  CLOUDFLARE_EMAIL: ${{}}
-  CLOUDFLARE_API_KEY: ${{}}
+  CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
+  CLOUDFLARE_API_KEY: ${{secrets.CLOUDFLARE_API_KEY }}
 
 permissions: read-all
 
