@@ -1,0 +1,63 @@
+# This is a basic workflow to help you get started with Actions
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  workflow_dispatch:
+  schedule:
+    - cron: '0 10 15 * *'
+
+env:
+  FOLDER: '${{ github.workspace }}/terraform/cloudflare-gateway/cloudflare/lists'
+
+permissions: read-all
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  auto-update:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout Branch
+        uses: actions/checkout@v3
+
+      - name: Fetch Domain List
+        working-directory: ${{env.FOLDER}}
+        run: |
+          LIST_URL="https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+          FILE="domain_list.txt"
+
+          echo "[*] Fetching hosts file: ${LIST_URL} -> ${FILE}"
+          wget --quiet $LIST_URL -O $FILE
+
+          echo "[*] Sorting list..."
+          sort -u -o $FILE $FILE
+
+          echo "[*] Removing comments from list..."
+          grep -o '^[^#]*' $FILE > temp.txt
+          mv temp.txt $FILE
+
+          echo "[*] Extracting domains from host file..."
+          cat $FILE | awk '{ print $2 }' > temp.txt
+          mv temp.txt $FILE
+
+          echo "[*] Removing localhost from list..."
+          sed -i '/localhost/d' $FILE
+          sed -i '/127.0.0.1/d' $FILE
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: 'Update Domain List'
+          branch-suffix: timestamp
+          commit-message: 'Updating the domain list'
+          body: ''
