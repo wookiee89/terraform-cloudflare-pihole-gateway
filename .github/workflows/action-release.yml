@@ -7,6 +7,7 @@ on:
 env:
   CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
   CLOUDFLARE_API_KEY: ${{secrets.CLOUDFLARE_API_KEY }}
+  tf_target_dir: /example
 
 permissions: read-all
 
@@ -50,12 +51,14 @@ jobs:
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
+        working-directory: ${{ env.tf_target_dir }}
 
       - name: Terraform Apply
         id: apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply --auto-approve
         working-directory: ${{ env.tf_target_dir }}
+
   version:
       permissions: write-all
       name: versioning
