@@ -1,0 +1,73 @@
+name: Release
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+env:
+  CLOUDFLARE_EMAIL: ${{}}
+  CLOUDFLARE_API_KEY: ${{}}
+
+permissions: read-all
+
+jobs:
+  terraform:
+    name: "Terraform"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hashicorp/setup-terraform@v2.0.3
+
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
+        with:
+          ref: main
+          token: ${{ github.token }}
+          fetch-depth: '0'
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Config Terraform plugin cache
+        run: |
+          echo plugin_cache_dir="$HOME/.terraform.d/plugin-cache" >~/.terraformrc
+          mkdir --parents ~/.terraform.d/plugin-cache
+
+      - name: Cache Terraform
+        uses: actions/cache@v3.2.4
+        with:
+          path: |
+            ~/.terraform.d/plugin-cache
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        working-directory: ${{ env.tf_target_dir }}
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        id: apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply --auto-approve
+        working-directory: ${{ env.tf_target_dir }}
+  version:
+      permissions: write-all
+      name: versioning
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3.3.0
+          with:
+            fetch-depth: '0'
+        - name: Bump version and push tag
+          uses: anothrNick/github-tag-action@1.61.0
+          env:
+            GITHUB_TOKEN: ${{ github.token }}
+            DEFAULT_BUMP: patch
+            WITH_V: "true"
+      needs: [terraform]
