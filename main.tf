@@ -1,20 +1,3 @@
-terraform {
-  required_providers {
-    cloudflare = {
-      source  = "cloudflare/cloudflare"
-      version = "~> 3.0"
-    }
-    local = {
-      source = "hashicorp/local"
-    }
-  }
-  required_version = ">= 1.1.0"
-}
-
-provider "cloudflare" {
-  api_token = var.cloudflare_api_token
-}
-
 resource "cloudflare_teams_rule" "block_malware" {
   account_id = var.cloudflare_account_id
 
