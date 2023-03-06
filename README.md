@@ -1,6 +1,6 @@
 # terraform-cloudflare-pihole-gateway
 
-This setup credits this blog post @marco-lancini and their blog post [Serverless Ad Blocking with Cloudflare Gateway](https://blog.marcolancini.it/2022/blog-serverless-ad-blocking-with-cloudflare-gateway/)
+Credit goes to @marco-lancini and their blog post [Serverless Ad Blocking with Cloudflare Gateway](https://blog.marcolancini.it/2022/blog-serverless-ad-blocking-with-cloudflare-gateway/)
 
 This module helps you setup a [Cloudflare Teams Gateway](https://blog.cloudflare.com/protect-your-team-with-cloudflare-gateway/) & mimics Pi-hole behaviour.
 
@@ -10,13 +10,16 @@ This module helps you setup a [Cloudflare Teams Gateway](https://blog.cloudflare
 
 
 #### Table of Contents
-- [Usage](#usage)
-- [Requirements](#requirements)
-- [Providers](#providers)
-- [Modules](#modules)
-- [Resources](#resources)
-- [Inputs](#inputs)
-- [Outputs](#outputs)
+- [terraform-cloudflare-pihole-gateway](#terraform-cloudflare-pihole-gateway)
+    - [Future Improvements](#future-improvements)
+      - [Table of Contents](#table-of-contents)
+  - [Usage](#usage)
+  - [Requirements](#requirements)
+  - [Providers](#providers)
+  - [Modules](#modules)
+  - [Resources](#resources)
+  - [Inputs](#inputs)
+  - [Outputs](#outputs)
 ## Usage
 *various commands
 
